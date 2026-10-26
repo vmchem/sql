@@ -209,5 +209,11 @@ Consider, for example, concepts of fariness, inequality, social structures, marg
 
 
 ```
-Your thoughts...
+In North America, a lot of people's financial freedom-of-movement is tied to their credit score. It's gatekept by a small number of private institutions, and individuals often have to pay, or sign up for a third-party service, to see the full picture of their own personal information. That information is shared between institutions and can limit whether someone can get a credit card, rent an apartment, buy a car, or open a business. Much like the family tree in Qadri's article, it constrains individuals based on historical data (sometimes decades old), and it's difficult to contest. Building up a credit score takes years.
+
+The system also favours individuals who were born in Canada. Adult immigrants, regardless of their financial standing, have to build credit from scratch upon arrival, since their history from another country usually doesn't carry over. Someone with years of savings and a stable career can be treated as riskier than a 20-year-old with a single credit card. I've helped family friends with a place to stay in cases where they were not able to rent an apartment because of their lack of credit history, even though they could comfortably afford the rent. In those cases, having no data was treated the same as having bad data.
+
+Problematically, credit scores favour taking on debt opportunities, like opting for larger credit limits and intentionally paying off loans more slowly. The value embedded here is that being a profitable borrower is the same as being a responsible one. People who avoid debt, whether for cultural or religious reasons, personal preference, or because they've been burned before, are effectively penalized for being cautious. This creates a cycle where those who already have access to credit keep gaining more, while those who are new, cautious, or marginalized stay on the outside and depend on someone else to vouch for them.
+
+
 ```
