@@ -201,5 +201,9 @@ Consider, for example, concepts of labour, bias, LLM proliferation, moderating c
 
 
 ```
-Your thoughts...
+Rather than rehash what the author already said (though I really enjoyed how she traces back who generated each piece of data), I want to note another ethical issue which she had left unsaid, even though nowadays is really affects journalists and essayists. When describing how ImageNet was constructed, it's mentioned that keyword are put into search engines and the images are mined from those results. I don't want to assume too much, but let's say they used Google Image Search. The images of Dogs or People or Cars we find there are uploaded by various users: stock image sites, news articles, bloggers, professional photographers. The researchers then take all these images, throw them into a dataset, and provide this data to various other users for training ML models. Some will derive financial benefits directly or indirectly from this, includng the researchers responsible for ImageNet. In this pipeline, do the individuals who produced those images get compensation or credit? It seems unlikely.
+
+Similarly in the modern era of LLMs, the Google Search AI lurks through Wikipedia, news articles, blog posts, peer reviewed literature, etc., and plops a LLM summary at the top of the results page. Often, it pushes the actual results to where you have to scroll for them. It adds citation links now, but the summaries are comprehensive enough that it's rarely necessary to actually go to the source. The ethics of these summaries have been a topic of debate, and some Canadian news sources have come into conflict with entities like Google and Meta because they demanded licensing fees to make up for the lost site traffic. This lead to these news sources being de-platformed from Facebook in 2023. Google agreed to instead provide $100M/yr to a Media Fund, though I'm certain the scales still tip strongly in Google's favour.
+
+It's interesting to think about the provenance of our data, especially now in the "big data" era.
 ```
