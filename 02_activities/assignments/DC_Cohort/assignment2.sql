@@ -23,7 +23,9 @@ Edit the appropriate columns -- you're making two edits -- and the NULL rows wil
 All the other rows will remain the same. */
 --QUERY 1
 
-
+SELECT 
+product_name || ', ' || COALESCE(product_size, '') || ' (' || COALESCE(product_qty_type, 'unit') || ')'
+FROM product;
 
 
 --END QUERY
@@ -41,7 +43,12 @@ HINT: One of these approaches uses ROW_NUMBER() and one uses DENSE_RANK().
 Filter the visits to dates before April 29, 2022. */
 --QUERY 2
 
-
+SELECT 
+	ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY market_date ASC) AS visit_count,
+	* 
+FROM customer_purchases
+WHERE market_date < '2022-04-29'
+GROUP BY customer_id, market_date;
 
 
 --END QUERY
@@ -53,7 +60,15 @@ only the customer’s most recent visit.
 HINT: Do not use the previous visit dates filter. */
 --QUERY 3
 
+CREATE TEMP TABLE IF NOT EXISTS latest_visit AS
+SELECT 
+	ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY market_date DESC) AS visit_count,
+	* 
+FROM customer_purchases
+GROUP BY customer_id, market_date;
 
+SELECT * FROM latest_visit
+WHERE visit_count = 1
 
 
 --END QUERY
@@ -67,7 +82,12 @@ Filter the visits to dates before April 29, 2022. */
 --QUERY 4
 
 
-
+SELECT
+	COUNT(product_id) OVER (PARTITION BY customer_id ORDER BY product_id) AS times_purchased, 
+	*
+FROM customer_purchases
+WHERE market_date < '2022-04-29'
+GROUP BY customer_id, product_id;
 
 --END QUERY
 
@@ -85,7 +105,13 @@ Remove any trailing or leading whitespaces. Don't just use a case statement for 
 Hint: you might need to use INSTR(product_name,'-') to find the hyphens. INSTR will help split the column. */
 --QUERY 5
 
-
+SELECT product_name,
+CASE
+	WHEN INSTR(product_name, '-') >0
+	THEN TRIM(SUBSTR(product_name, INSTR(product_name, '-') + 1))
+	ELSE NULL
+END AS description
+FROM product;
 
 
 --END QUERY
@@ -94,7 +120,14 @@ Hint: you might need to use INSTR(product_name,'-') to find the hyphens. INSTR w
 /* 2. Filter the query to show any product_size value that contain a number with REGEXP. */
 --QUERY 6
 
-
+SELECT *,
+CASE
+	WHEN INSTR(product_name, '-') >0
+	THEN TRIM(SUBSTR(product_name, INSTR(product_name, '-') + 1))
+	ELSE NULL
+END AS description
+FROM product
+WHERE product_size REGEXP '[0-9]';
 
 
 --END QUERY
@@ -111,7 +144,36 @@ HINT: There are a possibly a few ways to do this query, but if you're struggling
 with a UNION binding them. */
 --QUERY 7
 
+DROP TABLE IF EXISTS temp.daily_sales;
+CREATE TEMP TABLE daily_sales AS
+SELECT
+	market_date,
+	SUM(quantity * cost_per_quantity) AS total_sales
+FROM customer_purchases 
+GROUP BY market_date;
 
+DROP TABLE IF EXISTS temp.ranked_daily_sales;
+CREATE TEMP TABLE ranked_daily_sales AS
+SELECT 
+    market_date,
+    total_sales,
+    ROW_NUMBER() OVER (ORDER BY total_sales DESC) AS highest,
+    ROW_NUMBER() OVER (ORDER BY total_sales ASC) AS lowest
+FROM daily_sales;
+
+SELECT 
+    market_date,
+    total_sales,
+    'best day' AS day_performance
+FROM ranked_daily_sales
+WHERE highest = 1
+UNION
+SELECT 
+    market_date,
+    total_sales,
+    'worst day' AS day_performance
+FROM ranked_daily_sales
+WHERE lowest = 1;
 
 
 --END QUERY
