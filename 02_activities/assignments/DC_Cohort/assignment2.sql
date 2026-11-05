@@ -195,7 +195,34 @@ Before your final group by you should have the product of those two queries (x*y
 --QUERY 8
 
 
-
+WITH distinct_inventory AS (
+    SELECT DISTINCT
+        vendor_id,
+        product_id,
+        original_price
+    FROM vendor_inventory
+),
+crossed_customer_inventory AS (
+    SELECT
+        di.vendor_id,
+        di.product_id,
+        di.original_price,
+        c.customer_id
+    FROM distinct_inventory di
+    CROSS JOIN customer c
+)
+SELECT
+    vendor.vendor_name,
+    product.product_name,
+    SUM(5 * cci.original_price) AS item_sales
+FROM crossed_customer_inventory cci
+JOIN vendor
+    ON cci.vendor_id = vendor.vendor_id
+JOIN product
+    ON cci.product_id = product.product_id
+GROUP BY
+    vendor.vendor_name,
+    product.product_name;
 
 --END QUERY
 
@@ -206,7 +233,16 @@ This table will contain only products where the `product_qty_type = 'unit'`.
 It should use all of the columns from the product table, as well as a new column for the `CURRENT_TIMESTAMP`.  
 Name the timestamp column `snapshot_timestamp`. */
 --QUERY 9
+DROP TABLE IF EXISTS product_units;
 
+CREATE TABLE product_units AS
+SELECT
+	*,
+    CURRENT_TIMESTAMP AS snapshot_timestamp
+FROM product
+WHERE product_qty_type = 'unit';
+
+SELECT * FROM product_units;
 
 
 
@@ -217,8 +253,24 @@ Name the timestamp column `snapshot_timestamp`. */
 This can be any product you desire (e.g. add another record for Apple Pie). */
 --QUERY 10
 
+INSERT INTO product_units (
+    product_id,
+    product_name,
+    product_size,
+    product_category_id,
+    product_qty_type,
+    snapshot_timestamp
+)
+VALUES (
+    10,
+    'Eggs',
+    '1 dozen',
+    6,
+    'unit',
+    CURRENT_TIMESTAMP
+);
 
-
+SELECT * FROM product_units;
 
 --END QUERY
 
@@ -229,8 +281,13 @@ This can be any product you desire (e.g. add another record for Apple Pie). */
 HINT: If you don't specify a WHERE clause, you are going to have a bad time.*/
 --QUERY 11
 
-
-
+DELETE FROM product_units
+WHERE product_id = 10
+  AND snapshot_timestamp = (
+      SELECT MIN(snapshot_timestamp)
+      FROM product_units
+      WHERE product_id = 10 );
+SELECT * FROM product_units;
 
 --END QUERY
 
@@ -253,7 +310,20 @@ Finally, make sure you have a WHERE statement to update the right row,
 When you have all of these components, you can run the update statement. */
 --QUERY 12
 
+ALTER TABLE product_units
+ADD current_quantity INT;
 
+UPDATE product_units
+SET current_quantity = COALESCE(
+    (
+        SELECT vi.quantity
+        FROM vendor_inventory vi
+        WHERE vi.product_id = product_units.product_id
+        ORDER BY vi.market_date DESC
+        LIMIT 1),
+    0);
+
+SELECT * FROM product_units;
 
 
 --END QUERY
